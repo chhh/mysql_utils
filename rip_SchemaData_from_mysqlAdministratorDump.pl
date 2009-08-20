@@ -2,6 +2,10 @@ my $file = @ARGV[0];
 if (!defined $file) {
 	usage();
 }
+if (!-f $file) {
+	print "\nError: Bad file path/name ($file)\n\n";
+	exit;
+}
 my $file_nameWithoutExtension = $file;
 if ($file =~ /^(.*?)\./) {
 	$file_nameWithoutExtension = $1;
