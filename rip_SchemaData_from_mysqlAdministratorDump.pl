@@ -6,20 +6,32 @@ if (!-f $file) {
 	print "\nError: Bad file path/name ($file)\n\n";
 	exit;
 }
-my $file_nameWithoutExtension = $file;
-if ($file =~ /^(.*?)\./) {
-	$file_nameWithoutExtension = $1;
-}
-my $file_out = $file_nameWithoutExtension . '_[Schema].sql';
 
-open fh, '<', $file or die "couldn't open file  ($file): $!\n";
-open out, '>', $file_out or die "couldn't open file  ($file): $!\n";
-while (<fh>) {
-    #print if not /Dumping data for table `(.+?)`/../ALTER TABLE `(\1)` ENABLE KEYS/;
-    print out if not /Dumping data for table `.+?`/../ALTER TABLE `.+?` ENABLE KEYS/;
+$file =~ s/\\/\//g;
+print "\nProcessing file: $file\n\n";
+my $file_path = '';
+my $file_nameWithoutExtension = $file;
+my $file_extension = '';
+
+if ($file =~ /(.+\/|^)(.+(?=\.)|.+)(.*)/) {
+	$file_path = $1;
+	$file_nameWithoutExtension = $2;
+	$file_extension = $3;
+	#print "\n\nMATCHED:\n1 (path) = $1\n2 (name) = $2\n3 (ext ) = $3\n";   # DEBUG: output how the filename was parsed
 }
-close out;
-close fh;
+my $file_out = $file_path . $file_nameWithoutExtension . '_[Empty_Schema]' . $file_extension;
+print "Output file: $file_out\n\n";
+
+
+
+open FH, '<', $file or die "couldn't open file  ($file): $!\n";
+open OUT, '>', $file_out or die "couldn't open file  ($file_out): $!\n";
+while (<FH>) {
+    #print if not /Dumping data for table `(.+?)`/../ALTER TABLE `(\1)` ENABLE KEYS/;
+    print OUT if not /Dumping data for table `.+?`/../ALTER TABLE `.+?` ENABLE KEYS/;
+}
+close OUT;
+close FH;
 
 
 sub usage {
